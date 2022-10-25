@@ -1,10 +1,8 @@
 package com.smingsming.userservice.entity.follow.service;
 
-import com.smingsming.userservice.entity.follow.client.UserServerClient;
 import com.smingsming.userservice.entity.follow.entity.FollowEntity;
 import com.smingsming.userservice.entity.follow.repository.IFollowRepository;
 import com.smingsming.userservice.entity.follow.vo.FollowCountVo;
-import com.smingsming.userservice.entity.follow.vo.UserVo;
 import com.smingsming.userservice.global.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,20 +21,17 @@ import java.util.Optional;
 public class FollowServiceImpl implements IFollowService {
 
     private final IFollowRepository iFollowRepository;
-    private final UserServerClient userServerClient;
+//    private final UserServerClient userServerClient;
     private final JwtTokenProvider jwtTokenProvider;
 
     // 팔로우
     @Override
-    public String followUser(HttpServletRequest request, Long toUserId) {
+    public String followUser(HttpServletRequest request, Long followingId) {
 
-        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
-
-//        UserVo following = userServerClient.getUser(userId);
-//        UserVo follower = userServerClient.getUser(toUserId);
+        Long followerId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
 
         // 자기 자신은 팔로우 할 수 없음
-        if(fromUserId == toUserId) {
+        if(followerId == followingId) {
             log.info("자기 자신을 팔로우 할 수 없습니다.");
             return "본인은 팔로우할 수 없습니다.";
         }
@@ -46,11 +41,11 @@ public class FollowServiceImpl implements IFollowService {
 //            return "존재하지 않는 사용자입니다.";
 
         // 팔로우 버튼 한 번 누르면 팔로잉, 두 번 누르면 언팔로잉
-        FollowEntity follow = iFollowRepository.findByToUserIdAndFromUserId(toUserId, fromUserId);
+        FollowEntity follow = iFollowRepository.findByFollowingIdAndFollowerId(followingId, followerId);
         if(follow == null) {
             FollowEntity addFollow = FollowEntity.builder()
-                    .fromUserId(fromUserId)
-                    .toUserId(toUserId)
+                    .followerId(followerId)
+                    .followingId(followingId)
                     .build();
             iFollowRepository.save(addFollow);
             return "팔로우 성공";
@@ -80,7 +75,7 @@ public class FollowServiceImpl implements IFollowService {
     public List<FollowEntity> getFollowerList(Long userId, int page) {
         Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        return iFollowRepository.findAllByToUserId(userId, pr);
+        return iFollowRepository.findAllByFollowingId(userId, pr);
     }
 
     // 해당 유저의 팔로워 유저 목록 조회
@@ -88,24 +83,25 @@ public class FollowServiceImpl implements IFollowService {
     public List<FollowEntity> getFollowingList(Long userId, int page) {
         Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        return iFollowRepository.findAllByFromUserId(userId, pr);
+        return iFollowRepository.findAllByFollowerId(userId, pr);
     }
 
     // 팔로우, 팔로워 집계
     @Override
     public FollowCountVo countFollow(Long userId) {
 
-        Long toCount = iFollowRepository.countByToUserId(userId);
-        Long fromCount = iFollowRepository.countByFromUserId(userId);
+        Long toCount = iFollowRepository.countByFollowingId(userId);
+        Long fromCount = iFollowRepository.countByFollowerId(userId);
 
         FollowCountVo followCount = new FollowCountVo(toCount, fromCount);
         return followCount;
     }
 
+    // 팔로우 여부 확인
     @Override
-    public boolean isFollow(Long toUserId, HttpServletRequest request) {
-        Long fromUserId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
+    public boolean isFollow(Long followingId, HttpServletRequest request) {
+        Long followerId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
 
-        return iFollowRepository.existsByToUserIdAndFromUserId(toUserId, fromUserId);
+        return iFollowRepository.existsByFollowingIdAndFollowerId(followingId, followerId);
     }
 }

@@ -18,12 +18,10 @@ public class FollowController {
     private final IFollowService iFollowService;
 
     // 팔로우
-    @PostMapping(value ="/follow/{toUserId}")
-    public ResponseEntity<?> followUser(HttpServletRequest request, @PathVariable(value = "toUserId") Long toUserId) {
-        System.out.println(request);
-        System.out.println(toUserId);
+    @PostMapping(value ="/follow/{followingId}")
+    public ResponseEntity<?> followUser(HttpServletRequest request, @PathVariable(value = "followingId") Long followingId) {
 
-        String follow = iFollowService.followUser(request, toUserId);
+        String follow = iFollowService.followUser(request, followingId);
 
         return ResponseEntity.status(HttpStatus.OK).body(follow);
 
@@ -62,10 +60,10 @@ public class FollowController {
     }
     
     // 팔로우 여부 조회
-    @GetMapping("/check/{toUserId}")
-    public ResponseEntity<?> getIsFollow(@PathVariable(value = "toUserId") Long toUserId,
+    @GetMapping("/check/{followingId}")
+    public ResponseEntity<?> getIsFollow(@PathVariable(value = "followingId") Long followingId,
                                          HttpServletRequest request) {
-        boolean result = iFollowService.isFollow(toUserId, request);
+        boolean result = iFollowService.isFollow(followingId, request);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
