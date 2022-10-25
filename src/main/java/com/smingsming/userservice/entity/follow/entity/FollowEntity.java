@@ -18,8 +18,9 @@ public class FollowEntity {
     private Long id;
 
     @NotNull
-    private Long userId;
+    private Long fromUserId;
 
     @NotNull
-    private Long followingUserId;
+    private Long toUserId;
+
 }

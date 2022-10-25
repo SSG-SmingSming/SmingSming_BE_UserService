@@ -1,0 +1,20 @@
+server:
+  port: '0'
+
+spring:
+  # application 정보 설정
+  application:
+    name: userservice-server
+  # JPA 설정
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'false'
+  cloud:
+    config:
+      name: userservice-server
+      profile: dev

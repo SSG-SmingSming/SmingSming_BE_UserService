@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -17,12 +18,12 @@ public class FollowController {
     private final IFollowService iFollowService;
 
     // 팔로우
-    @PostMapping(value ="/follow/{userId}/{followingUserId}")
-    public ResponseEntity<?> followUser(@PathVariable(value = "userId") Long userId,@PathVariable(value = "followingUserId") Long followingUserId) {
-        System.out.println(userId);
-        System.out.println(followingUserId);
+    @PostMapping(value ="/follow/{toUserId}")
+    public ResponseEntity<?> followUser(HttpServletRequest request, @PathVariable(value = "toUserId") Long toUserId) {
+        System.out.println(request);
+        System.out.println(toUserId);
 
-        String follow = iFollowService.followUser(userId, followingUserId);
+        String follow = iFollowService.followUser(request, toUserId);
 
         return ResponseEntity.status(HttpStatus.OK).body(follow);
 
@@ -50,6 +51,21 @@ public class FollowController {
     @GetMapping("/follower/{userId}")
     public List<FollowEntity> getFollowerList(@PathVariable (value = "userId") Long userId) {
         return iFollowService.getFollwerList(userId);
+    }
+
+    // 팔로우, 팔로워 집계
+    @GetMapping("/count/{userId}")
+    public ResponseEntity<?> countFollow(@PathVariable(value = "userId") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(iFollowService.countFollow(userId));
+    }
+    
+    // 팔로우 여부 조회
+    @GetMapping("/check/{toUserId}")
+    public ResponseEntity<?> getIsFollow(@PathVariable(value = "toUserId") Long toUserId,
+                                         HttpServletRequest request) {
+        boolean result = iFollowService.isFollow(toUserId, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
 }
