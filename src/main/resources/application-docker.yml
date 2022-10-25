@@ -13,9 +13,10 @@ spring:
         format_sql: 'true'
     hibernate:
       ddl-auto: update
-    show-sql: true
-  #
+    show-sql: 'false'
+
+  # 컨피그 서버 설정
   cloud:
     config:
-      name: user-server
+      name: userservice-server
       profile: docker
