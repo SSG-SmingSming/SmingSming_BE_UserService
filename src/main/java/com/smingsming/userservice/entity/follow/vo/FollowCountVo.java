@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FollowCountVo {
 
-    private Long toCount;
-    private Long fromCount;
+    private Long follower;
+    private Long following;
 }

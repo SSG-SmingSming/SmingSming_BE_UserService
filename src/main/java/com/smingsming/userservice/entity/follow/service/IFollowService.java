@@ -10,8 +10,8 @@ public interface IFollowService {
 
     String followUser(HttpServletRequest request, Long followingUserId);
     boolean unfollowUser(Long id);
-    List<FollowEntity> getFollowingList(Long userId);
-    List<FollowEntity> getFollwerList(Long userId);
+    List<FollowEntity> getFollowerList(Long userId, int page);
+    List<FollowEntity> getFollowingList(Long userId, int page);
     FollowCountVo countFollow(Long userId);
     boolean isFollow(Long toUserId, HttpServletRequest request);
 }

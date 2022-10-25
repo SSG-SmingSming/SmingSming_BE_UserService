@@ -41,16 +41,18 @@ public class FollowController {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("언팔로잉 실패");
     }
 
-    // 팔로잉한 유저 목록 조회
-    @GetMapping("/{userId}")
-    public List<FollowEntity> getFollowingList(@PathVariable (value = "userId") Long userId) {
-        return iFollowService.getFollowingList(userId);
-    }
-
     // 해당 유저의 팔로워 유저 목록 조회
     @GetMapping("/follower/{userId}")
-    public List<FollowEntity> getFollowerList(@PathVariable (value = "userId") Long userId) {
-        return iFollowService.getFollwerList(userId);
+    public List<FollowEntity> getFollowerList(@PathVariable (value = "userId") Long userId,
+                                               @RequestParam(name = "page", defaultValue = "1") int page) {
+        return iFollowService.getFollowerList(userId, page);
+    }
+
+    // 팔로잉한 유저 목록 조회
+    @GetMapping("/{userId}")
+    public List<FollowEntity> getFollowingList(@PathVariable (value = "userId") Long userId,
+                                              @RequestParam(name = "page", defaultValue = "1") int page) {
+        return iFollowService.getFollowingList(userId, page);
     }
 
     // 팔로우, 팔로워 집계

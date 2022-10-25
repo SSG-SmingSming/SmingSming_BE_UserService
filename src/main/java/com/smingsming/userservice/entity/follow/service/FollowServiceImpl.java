@@ -8,6 +8,9 @@ import com.smingsming.userservice.entity.follow.vo.UserVo;
 import com.smingsming.userservice.global.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,14 +77,18 @@ public class FollowServiceImpl implements IFollowService {
 
     // 팔로잉한 유저 목록 조회
     @Override
-    public List<FollowEntity> getFollowingList(Long userId) {
-        return iFollowRepository.findAllByToUserId(userId);
+    public List<FollowEntity> getFollowerList(Long userId, int page) {
+        Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
+
+        return iFollowRepository.findAllByToUserId(userId, pr);
     }
 
     // 해당 유저의 팔로워 유저 목록 조회
     @Override
-    public List<FollowEntity> getFollwerList(Long userId) {
-        return iFollowRepository.findAllByFromUserId(userId);
+    public List<FollowEntity> getFollowingList(Long userId, int page) {
+        Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
+
+        return iFollowRepository.findAllByFromUserId(userId, pr);
     }
 
     // 팔로우, 팔로워 집계
