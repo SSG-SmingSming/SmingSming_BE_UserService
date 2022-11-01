@@ -22,23 +22,17 @@ public class PayEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String uuid;
+
     @NotNull
     @CreationTimestamp
     private Timestamp payDate;      // 결제 일자
 
-    @NotNull
-    private Long userId;            // 유저 번호
+    private String cardNumber;
 
-    @NotNull
-    private int paymentType;        // 수단 유형
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private TicketEntity ticketEntity;
+//
 
-    private String bank;            // 은행명
-
-    private String accountNumber;   // 계좌번호
-
-    private String cardNumber;      // 카드번호
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private TicketEntity ticketEntity;
 
 }

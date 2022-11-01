@@ -1,5 +1,6 @@
 package com.smingsming.userservice.entity.follow.service;
 
+import com.smingsming.userservice.entity.follow.client.UserServerClient;
 import com.smingsming.userservice.entity.follow.entity.FollowEntity;
 import com.smingsming.userservice.entity.follow.repository.IFollowRepository;
 import com.smingsming.userservice.entity.follow.vo.FollowCountVo;
@@ -21,17 +22,17 @@ import java.util.Optional;
 public class FollowServiceImpl implements IFollowService {
 
     private final IFollowRepository iFollowRepository;
-//    private final UserServerClient userServerClient;
+    private final UserServerClient userServerClient;
     private final JwtTokenProvider jwtTokenProvider;
 
     // 팔로우
     @Override
-    public String followUser(HttpServletRequest request, Long followingId) {
+    public String followUser(HttpServletRequest request, String followingId) {
 
-        Long followerId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
+        String followerId = String.valueOf(jwtTokenProvider.getUuid(jwtTokenProvider.resolveToken(request)));
 
         // 자기 자신은 팔로우 할 수 없음
-        if(followerId == followingId) {
+        if(followerId.equals(followingId)) {
             log.info("자기 자신을 팔로우 할 수 없습니다.");
             return "본인은 팔로우할 수 없습니다.";
         }
@@ -56,42 +57,29 @@ public class FollowServiceImpl implements IFollowService {
 
     }
 
-    // 언팔로우
+    // 해당 유저의 팔로워 유저 목록 조회
     @Override
-    public boolean unfollowUser(Long id) {
+    public List<FollowEntity> getFollowerList(String uuid, int page) {
+        Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        Optional<FollowEntity> follow = iFollowRepository.findById(id);
-
-        if(follow.isPresent()) {
-            iFollowRepository.deleteById(id);
-            return true;
-        }
-
-        return false;
+        return iFollowRepository.findAllByFollowingId(uuid, pr);
     }
+
 
     // 팔로잉한 유저 목록 조회
     @Override
-    public List<FollowEntity> getFollowerList(Long userId, int page) {
+    public List<FollowEntity> getFollowingList(String uuid, int page) {
         Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        return iFollowRepository.findAllByFollowingId(userId, pr);
-    }
-
-    // 해당 유저의 팔로워 유저 목록 조회
-    @Override
-    public List<FollowEntity> getFollowingList(Long userId, int page) {
-        Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
-
-        return iFollowRepository.findAllByFollowerId(userId, pr);
+        return iFollowRepository.findAllByFollowerId(uuid, pr);
     }
 
     // 팔로우, 팔로워 집계
     @Override
-    public FollowCountVo countFollow(Long userId) {
+    public FollowCountVo countFollow(String uuid) {
 
-        Long toCount = iFollowRepository.countByFollowingId(userId);
-        Long fromCount = iFollowRepository.countByFollowerId(userId);
+        String toCount = iFollowRepository.countByFollowingId(uuid);
+        String fromCount = iFollowRepository.countByFollowerId(uuid);
 
         FollowCountVo followCount = new FollowCountVo(toCount, fromCount);
         return followCount;
@@ -99,8 +87,8 @@ public class FollowServiceImpl implements IFollowService {
 
     // 팔로우 여부 확인
     @Override
-    public boolean isFollow(Long followingId, HttpServletRequest request) {
-        Long followerId = Long.valueOf(jwtTokenProvider.getUserPk(jwtTokenProvider.resolveToken(request)));
+    public boolean isFollow(String followingId, HttpServletRequest request) {
+        String followerId = String.valueOf(jwtTokenProvider.getUuid(jwtTokenProvider.resolveToken(request)));
 
         return iFollowRepository.existsByFollowingIdAndFollowerId(followingId, followerId);
     }

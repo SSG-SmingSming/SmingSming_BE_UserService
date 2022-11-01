@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -20,18 +21,18 @@ public class PayController {
 
     // 이용권 구매
     @PostMapping("/buy")
-    public ResponseEntity<?> buyTicket(@RequestBody PayTicketReqVo payTicketReqVo) {
-        boolean result = iPayService.buyTicket(payTicketReqVo);
+    public ResponseEntity<?> buyTicket(@RequestBody PayTicketReqVo payTicketReqVo, HttpServletRequest request) {
+        boolean result = iPayService.buyTicket(payTicketReqVo, request);
         if(result == true)
             return ResponseEntity.status(HttpStatus.OK).body(result);
         else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("결제가 실패하였습니다. 다시 시도해주세요.");
     }
 
-    // 구매한 이용권 조회
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<?> getTicketByUser(@PathVariable(value = "userId") Long userId) {
-        List<PayResVo> payResVo = iPayService.getTicketByUser(userId);
+    // 구매한 이용권, 결제 내역 조회
+    @GetMapping("/get/{uuid}")
+    public ResponseEntity<?> getTicketByUser(@PathVariable(value = "uuid") String uuid) {
+        List<PayResVo> payResVo = iPayService.getTicketByUser(uuid);
 
         if(payResVo !=null)
             return ResponseEntity.status(HttpStatus.OK).body(payResVo);
@@ -40,15 +41,4 @@ public class PayController {
 
     }
 
-//    // 결제 내역 조회
-//    @GetMapping("/get/history/{userId}")
-//    public ResponseEntity<?> getPayHistory(@PathVariable(value = "userId") Long userId) {
-//        List<PayHistoryResVo> resVoList = iPayService.getPayHistory(userId);
-//
-//        if(resVoList !=null)
-//            return ResponseEntity.status(HttpStatus.OK).body(resVoList);
-//        else
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("구매 내역이 존재하지 않습니다.");
-//    }
-//
 }

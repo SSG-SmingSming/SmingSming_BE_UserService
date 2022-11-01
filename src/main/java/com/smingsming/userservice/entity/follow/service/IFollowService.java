@@ -8,10 +8,9 @@ import java.util.List;
 
 public interface IFollowService {
 
-    String followUser(HttpServletRequest request, Long followingUserId);
-    boolean unfollowUser(Long id);
-    List<FollowEntity> getFollowerList(Long userId, int page);
-    List<FollowEntity> getFollowingList(Long userId, int page);
-    FollowCountVo countFollow(Long userId);
-    boolean isFollow(Long toUserId, HttpServletRequest request);
+    String followUser(HttpServletRequest request, String followingUserId);
+    List<FollowEntity> getFollowerList(String uuid, int page);
+    List<FollowEntity> getFollowingList(String uuid, int page);
+    FollowCountVo countFollow(String uuid);
+    boolean isFollow(String followingId, HttpServletRequest request);
 }

@@ -5,15 +5,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 public interface IFollowRepository extends JpaRepository<FollowEntity, Long> {
 
 //    Optional<FollowEntity> findByUserId(Long userId);
 //    FollowEntity findByUserIdAndFollowingUserId(Long userId, Long followingUserId);
-    FollowEntity findByFollowingIdAndFollowerId(Long userId, Long followingId);
-    List<FollowEntity> findAllByFollowingId(Long userId, Pageable pr);
-    List<FollowEntity> findAllByFollowerId(Long userId, Pageable pr);
-    Long countByFollowingId(Long followingId);    // 팔로워 수 (follower)
-    Long countByFollowerId(Long followerId);  // 팔로우 수 (following)
-    Boolean existsByFollowingIdAndFollowerId(Long followingId, Long followerId);
+    FollowEntity findByFollowingIdAndFollowerId(String followerId, String followingId);
+    List<FollowEntity> findAllByFollowingId(String uuid, Pageable pr);
+    List<FollowEntity> findAllByFollowerId(String uuid, Pageable pr);
+    String countByFollowingId(String followingId);    // 팔로워 수 (follower)
+    String countByFollowerId(String followerId);  // 팔로우 수 (following)
+    Boolean existsByFollowingIdAndFollowerId(String followingId, String followerId);
 }

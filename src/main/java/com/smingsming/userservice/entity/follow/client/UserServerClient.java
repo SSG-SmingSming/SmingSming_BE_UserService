@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserServerClient {
 
     // user 서버에서 userId 가져오기
-    @GetMapping("/user/get/{id}")
-    UserVo getUser(@PathVariable Long id);
+    @GetMapping("/user/get/{uuid}")
+    UserVo getUser(@PathVariable String uuid);
 
 }

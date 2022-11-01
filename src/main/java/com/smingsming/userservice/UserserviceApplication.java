@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 public class UserserviceApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(UserserviceApplication.class, args);
 	}

@@ -7,8 +7,5 @@ import lombok.Data;
 public class PayTicketReqVo {
 
     private Long ticketId;
-    private int paymentType;
-    private String bank;
-    private String accountNumber;
     private String cardNumber;
 }

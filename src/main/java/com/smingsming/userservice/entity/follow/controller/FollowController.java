@@ -19,7 +19,7 @@ public class FollowController {
 
     // 팔로우
     @PostMapping(value ="/follow/{followingId}")
-    public ResponseEntity<?> followUser(HttpServletRequest request, @PathVariable(value = "followingId") Long followingId) {
+    public ResponseEntity<?> followUser(HttpServletRequest request, @PathVariable(value = "followingId") String followingId) {
 
         String follow = iFollowService.followUser(request, followingId);
 
@@ -27,41 +27,29 @@ public class FollowController {
 
     }
 
-    // 언팔로우
-    @DeleteMapping(value ="/unfollow/{id}")
-    public ResponseEntity<?> unfollowUser(@PathVariable(value = "id") Long id) {
-
-        boolean unfollow = iFollowService.unfollowUser(id);
-
-        if(unfollow)
-            return ResponseEntity.status(HttpStatus.OK).body("언팔로잉 성공");
-        else
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("언팔로잉 실패");
-    }
-
     // 해당 유저의 팔로워 유저 목록 조회
-    @GetMapping("/follower/{userId}")
-    public List<FollowEntity> getFollowerList(@PathVariable (value = "userId") Long userId,
+    @GetMapping("/follower/{uuid}")
+    public List<FollowEntity> getFollowerList(@PathVariable(value = "uuid") String uuid,
                                                @RequestParam(name = "page", defaultValue = "1") int page) {
-        return iFollowService.getFollowerList(userId, page);
+        return iFollowService.getFollowerList(uuid, page);
     }
 
     // 팔로잉한 유저 목록 조회
-    @GetMapping("/{userId}")
-    public List<FollowEntity> getFollowingList(@PathVariable (value = "userId") Long userId,
+    @GetMapping("/{uuid}")
+    public List<FollowEntity> getFollowingList(@PathVariable(value = "uuid") String uuid,
                                               @RequestParam(name = "page", defaultValue = "1") int page) {
-        return iFollowService.getFollowingList(userId, page);
+        return iFollowService.getFollowingList(uuid, page);
     }
 
     // 팔로우, 팔로워 집계
-    @GetMapping("/count/{userId}")
-    public ResponseEntity<?> countFollow(@PathVariable(value = "userId") Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(iFollowService.countFollow(userId));
+    @GetMapping("/count/{uuid}")
+    public ResponseEntity<?> countFollow(@PathVariable(value = "uuid") String uuid) {
+        return ResponseEntity.status(HttpStatus.OK).body(iFollowService.countFollow(uuid));
     }
     
     // 팔로우 여부 조회
     @GetMapping("/check/{followingId}")
-    public ResponseEntity<?> getIsFollow(@PathVariable(value = "followingId") Long followingId,
+    public ResponseEntity<?> getIsFollow(@PathVariable(value = "followingId") String followingId,
                                          HttpServletRequest request) {
         boolean result = iFollowService.isFollow(followingId, request);
 

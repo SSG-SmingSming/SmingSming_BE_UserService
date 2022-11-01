@@ -18,9 +18,9 @@ public class FollowEntity {
     private Long id;
 
     @NotNull
-    private Long followerId;
+    private String followerId;
 
     @NotNull
-    private Long followingId;
+    private String followingId;
 
 }

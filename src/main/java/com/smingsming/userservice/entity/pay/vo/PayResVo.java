@@ -10,6 +10,6 @@ public class PayResVo {
 
     private Long id;
     private Timestamp payDate;
-    private int paymentType;
+//    private int paymentType;
 
 }
