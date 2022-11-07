@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserVo {
-    private Long id;
+public class UserDetailVo {
+    private String uuid;
     private String userEmail;
     private String nickName;
     private String userThumbnail;

@@ -1,9 +1,12 @@
 package com.smingsming.userservice.entity.follow.service;
 
-import com.smingsming.userservice.entity.follow.client.UserServerClient;
+import com.smingsming.userservice.entity.follow.client.UserServiceClient;
 import com.smingsming.userservice.entity.follow.entity.FollowEntity;
 import com.smingsming.userservice.entity.follow.repository.IFollowRepository;
 import com.smingsming.userservice.entity.follow.vo.FollowCountVo;
+import com.smingsming.userservice.entity.follow.vo.UserDetailVo;
+import com.smingsming.userservice.exception.CustomException;
+import com.smingsming.userservice.exception.ErrorCode;
 import com.smingsming.userservice.global.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -22,7 +24,7 @@ import java.util.Optional;
 public class FollowServiceImpl implements IFollowService {
 
     private final IFollowRepository iFollowRepository;
-    private final UserServerClient userServerClient;
+    private final UserServiceClient userServiceClient;
     private final JwtTokenProvider jwtTokenProvider;
 
     // 팔로우
@@ -33,13 +35,22 @@ public class FollowServiceImpl implements IFollowService {
 
         // 자기 자신은 팔로우 할 수 없음
         if(followerId.equals(followingId)) {
-            log.info("자기 자신을 팔로우 할 수 없습니다.");
-            return "본인은 팔로우할 수 없습니다.";
+            throw new CustomException(ErrorCode.NOT_FOLLOW_MYSELF);
+//            log.info("자기 자신을 팔로우 할 수 없습니다.");
+//            return "본인은 팔로우할 수 없습니다.";
         }
 
-//        // user 유효성 확인
-//        if(following == null && follower == null)
-//            return "존재하지 않는 사용자입니다.";
+        // user 유효성 확인
+        try {
+            UserDetailVo user = userServiceClient.getUser(followingId);
+
+
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.USER_NOT_EXISTED);
+        }
+//        if(user == null)
+//            throw new CustomException(ErrorCode.USER_NOT_EXISTED);
+
 
         // 팔로우 버튼 한 번 누르면 팔로잉, 두 번 누르면 언팔로잉
         FollowEntity follow = iFollowRepository.findByFollowingIdAndFollowerId(followingId, followerId);
@@ -57,21 +68,32 @@ public class FollowServiceImpl implements IFollowService {
 
     }
 
-    // 해당 유저의 팔로워 유저 목록 조회
+    // 해당 유저의 팔로워 목록 조회
     @Override
     public List<FollowEntity> getFollowerList(String uuid, int page) {
         Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        return iFollowRepository.findAllByFollowingId(uuid, pr);
+
+        List<FollowEntity> followEntityList = iFollowRepository.findAllByFollowingId(uuid, pr);
+
+        if(followEntityList.isEmpty())
+            throw new CustomException(ErrorCode.FOLLOWER_READ_FAILED);
+        else
+            return followEntityList;
     }
 
 
-    // 팔로잉한 유저 목록 조회
+    // 해당 유저의 팔로잉 목록 조회
     @Override
     public List<FollowEntity> getFollowingList(String uuid, int page) {
         Pageable pr = PageRequest.of(page - 1 , 20, Sort.by("id").descending());
 
-        return iFollowRepository.findAllByFollowerId(uuid, pr);
+        List<FollowEntity> followEntityList = iFollowRepository.findAllByFollowerId(uuid, pr);
+
+        if(followEntityList.isEmpty())
+            throw new CustomException(ErrorCode.FOLLOWING_READ_FAILED);
+        else
+            return followEntityList;
     }
 
     // 팔로우, 팔로워 집계
@@ -90,6 +112,9 @@ public class FollowServiceImpl implements IFollowService {
     public boolean isFollow(String followingId, HttpServletRequest request) {
         String followerId = String.valueOf(jwtTokenProvider.getUuid(jwtTokenProvider.resolveToken(request)));
 
-        return iFollowRepository.existsByFollowingIdAndFollowerId(followingId, followerId);
+        if(! followingId.isEmpty())
+            return iFollowRepository.existsByFollowingIdAndFollowerId(followingId, followerId);
+        else
+            throw new CustomException(ErrorCode.USER_NOT_EXISTED);
     }
 }

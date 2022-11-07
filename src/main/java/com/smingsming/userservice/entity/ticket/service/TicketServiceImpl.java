@@ -3,6 +3,8 @@ package com.smingsming.userservice.entity.ticket.service;
 import com.smingsming.userservice.entity.ticket.entity.TicketEntity;
 import com.smingsming.userservice.entity.ticket.repository.ITicketRepository;
 import com.smingsming.userservice.entity.ticket.vo.TicketAddReqVo;
+import com.smingsming.userservice.exception.CustomException;
+import com.smingsming.userservice.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -35,8 +37,9 @@ public class TicketServiceImpl implements ITicketService{
 
         if(! ticketEntity.isEmpty()) {
             return ticketEntity;
+        } else {
+            throw new CustomException(ErrorCode.READ_TICKET_FAILED);
         }
-        return null;
     }
 
     // 이용권 삭제 -> 해당 이용권 서비스 종료
@@ -47,7 +50,8 @@ public class TicketServiceImpl implements ITicketService{
         if(ticketEntity.isPresent()) {
             iTicketRepository.deleteById(id);
             return true;
+        } else {
+            throw new CustomException(ErrorCode.TICKET_NOT_EXISTED);
         }
-        return false;
     }
 }
