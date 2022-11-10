@@ -76,10 +76,7 @@ public class FollowServiceImpl implements IFollowService {
 
         List<FollowEntity> followEntityList = iFollowRepository.findAllByFollowingId(uuid, pr);
 
-        if(followEntityList.isEmpty())
-            throw new CustomException(ErrorCode.FOLLOWER_READ_FAILED);
-        else
-            return followEntityList;
+        return followEntityList;
     }
 
 
@@ -90,10 +87,7 @@ public class FollowServiceImpl implements IFollowService {
 
         List<FollowEntity> followEntityList = iFollowRepository.findAllByFollowerId(uuid, pr);
 
-        if(followEntityList.isEmpty())
-            throw new CustomException(ErrorCode.FOLLOWING_READ_FAILED);
-        else
-            return followEntityList;
+        return followEntityList;
     }
 
     // 팔로우, 팔로워 집계
